@@ -26,7 +26,7 @@ def main():
                 image_editable = ImageDraw.Draw(background)
                 image_editable.text((0, 0), text, (0, 0, 0), font=font)
                 result_dir = 'result'
-                background.save(result_dir + '/' + font_path.lower().split('fonts/')[1].split('.ttf')[0].split('.otf')[0] + '.JPG')
+                background.save(result_dir + '/' + font_path.lower().split('fonts/')[1].split('.ttf')[0].split('.otf')[0] + '.jpg')
         except:
             print("That's Bizarre!")
 

@@ -1,19 +1,12 @@
-## import packages
 import os
-
 import torch
 import random
 import numpy as np
 import torch.nn as nn
-import torchvision
-import torchvision.transforms as transforms
-import torch.optim as optim
 from torch.utils.data import DataLoader
-from torch.utils.data import sampler
-import torchvision.datasets as dset
 
 import matplotlib.pyplot as plt
-%matplotlib inline
+'exec(%matplotlib inline)'
 plt.rcParams['image.interpolation'] = 'nearest'
 plt.rcParams['image.cmap'] = 'gray'
 
@@ -48,27 +41,35 @@ import torchvision
 import torchvision.transforms as transforms
 import os
 
-if not os.path.isdir('./data'):
-    os.mkdir('./data')
-root = './data/'
+if not os.path.isdir('data'):
+    os.mkdir('data')
+root = 'result/*.*'
 
-train_bs = 128
+train_bs = 800
 
-transform = transforms.Compose([transforms.ToTensor(),
-         transforms.Normalize(mean=[0.5],
-                                std=[0.5])
-        ])
+def load_dataset():
+    data_path = '.'
 
-training_data = np.zeroes([831,1,36,36])
-index = 0
-for font in glob.glob(root):
-    fontImage = Image.open(font)
-    # convert image to numpy array
-    data = np.asarray(image)
-    training_data[index] = data
-    index+=1
-# training_data = torchvision.datasets.MNIST(root, train=True, transform=transform,download=True)
-train_loader=torch.utils.data.DataLoader(dataset=training_data, batch_size=train_bs, shuffle=True, drop_last=True)
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.5], std=[0.5]),
+        torchvision.transforms.Grayscale(),
+    ])
+    train_dataset = torchvision.datasets.ImageFolder(
+        root=data_path,
+        transform=transform
+    )
+    train_loader = torch.utils.data.DataLoader(
+        dataset=train_dataset,
+        batch_size=train_bs,
+        num_workers=0,
+        shuffle=True,
+        drop_last=True
+    )
+    return train_loader
+
+
+train_loader = load_dataset()
 
 
 ###############################################################################
@@ -208,7 +209,7 @@ def GLoss(logits_fake, targets_real):
 optimizer_G = torch.optim.Adam(generator.parameters(), lr=0.0002, betas=(0.5, 0.999))
 optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=0.0002, betas=(0.5, 0.999))
 
-epochs = 50
+epochs = 500
 noise_dim = 100
 ############################################################################### 
 ## Training loop
@@ -248,7 +249,7 @@ for epoch in range(epochs):
           
     if epoch % 2 == 0:
         viz_batch = fake_images.data.cpu().numpy()
-        fig = plt.figure(figsize=(8,10))
+        fig = plt.figure(figsize=(8, 10))
         for i in np.arange(1, 10):
             ax = fig.add_subplot(3, 3, i)
             img = viz_batch[i].squeeze()
